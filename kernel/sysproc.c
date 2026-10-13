@@ -110,3 +110,29 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// sys_interpose - restrict which system calls a process can make.
+// arg0: mask (bitmask of syscall numbers to reject, 1 << SYS_xxx)
+// arg1: allowed pathname for open/exec (0 = no path exception)
+// Returns -1 if interpose has already been called on this process.
+uint64
+sys_interpose(void)
+{
+  struct proc *p = myproc();
+  int mask;
+  uint64 path_addr;
+  char path[MAXPATH];
+
+  if (p->interpose_mask != 0)
+    return -1;
+  argint(0, &mask);
+  argaddr(1, &path_addr);
+  if (path_addr == 0) {
+    path[0] = 0;
+  } else if (argstr(1, path, sizeof(path)) < 0) {
+    return -1;
+  }
+  p->interpose_mask = mask;
+  safestrcpy(p->interpose_path, path, sizeof(p->interpose_path));
+  return 0;
+}

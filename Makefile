@@ -79,6 +79,7 @@ CFLAGS += -fno-builtin-memcpy -Wno-main
 CFLAGS += -fno-builtin-printf -fno-builtin-fprintf -fno-builtin-vprintf
 CFLAGS += -I.
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
+CFLAGS += -DLAB_SYSCALL
 
 # Disable PIE when possible (for Ubuntu 16.10 toolchain)
 ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]no-pie'),)
@@ -154,6 +155,10 @@ UPROGS=\
 	$U/_sixfive\
 	$U/_memdump\
 	$U/_find\
+	$U/_sandbox\
+	$U/_sbtest\
+	$U/_attack\
+	$U/_secret\
 
 fs.img: mkfs/mkfs README findtest.sh $(UPROGS)
 	mkfs/mkfs fs.img README findtest.sh $(UPROGS)

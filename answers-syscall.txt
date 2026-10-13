@@ -1,0 +1,6 @@
+1. `usertrap` calls `syscall` after handling a user-mode ecall.
+2. `p->trapframe->a7` is `15`, which is `SYS_open`, the syscall number for `open`.
+3. The SPP bit in `sstatus` is clear, so the CPU entered the kernel from user mode.
+4. With the intentional null dereference, `sepc` is `0x80001d68` and the instruction is `lw a3,0(zero)`. Register `a3` holds the compiled value of `num`.
+5. The load from address zero faults because address zero is unmapped in the kernel page table. `scause=0xd` identifies a load page fault.
+6. The process at the fault is `init`, PID `1`.
